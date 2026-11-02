@@ -14,3 +14,4 @@ Thumbs.db
 .env
 *.pem
 firebaseConfig.json
+CLAUDE.md
