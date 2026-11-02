@@ -1,0 +1,73 @@
+{
+  "manifest_version": 3,
+  "name": "Cloud Workspace Launcher",
+  "version": "1.0.0",
+  "description": "Save, sync, and launch entire browser workspaces (tabs, groups, pinned state) in one click.",
+  "permissions": [
+    "tabs",
+    "tabGroups",
+    "storage",
+    "activeTab",
+    "identity",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "options_page": "src/options.html",
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_title": "Workspace Launcher",
+    "default_icon": {
+      "16": "src/icons/icon16.png",
+      "48": "src/icons/icon48.png",
+      "128": "src/icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "src/icons/icon16.png",
+    "48": "src/icons/icon48.png",
+    "128": "src/icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/injected.js", "src/icons/*", "src/lib/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "minimum_chrome_version": "110",
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Open Workspace Launcher"
+    },
+    "quick-capture": {
+      "suggested_key": {
+        "default": "Alt+Shift+W",
+        "mac": "Alt+Shift+W"
+      },
+      "description": "Instantly capture the current window as a workspace"
+    },
+    "restore-last": {
+      "suggested_key": {
+        "default": "Alt+Shift+R",
+        "mac": "Alt+Shift+R"
+      },
+      "description": "Restore the most recent workspace"
+    }
+  }
+}

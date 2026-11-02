@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings — Workspace Launcher</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <header class="head">
+      <h1>Settings</h1>
+      <span class="sub">Workspace Launcher</span>
+    </header>
+
+    <section class="block">
+      <h2>Storage Backend</h2>
+      <p class="hint">Where your workspaces are saved. You can switch anytime.</p>
+      <div class="backend-grid">
+        <label class="backend-card" data-backend="local">
+          <input type="radio" name="backend" value="local" />
+          <div class="bc-icon local"></div>
+          <div class="bc-text">
+            <strong>Local</strong>
+            <span>chrome.storage only · offline · no setup</span>
+          </div>
+        </label>
+        <label class="backend-card" data-backend="firebase">
+          <input type="radio" name="backend" value="firebase" />
+          <div class="bc-icon firebase"></div>
+          <div class="bc-text">
+            <strong>Firebase</strong>
+            <span>Cloud sync across devices · needs auth</span>
+          </div>
+        </label>
+        <label class="backend-card" data-backend="custom">
+          <input type="radio" name="backend" value="custom" />
+          <div class="bc-icon custom"></div>
+          <div class="bc-text">
+            <strong>Custom Server</strong>
+            <span>Your own REST API endpoint</span>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <section id="firebase-panel" class="block">
+      <h2>Firebase Configuration</h2>
+      <p class="hint">
+        Paste your Firebase client config from the Firebase Console.
+        Only client-side values are needed — never put secrets here.
+      </p>
+      <div class="field">
+        <label>apiKey</label>
+        <input id="fb-apiKey" type="text" placeholder="AIzaSy…" />
+      </div>
+      <div class="field">
+        <label>authDomain</label>
+        <input id="fb-authDomain" type="text" placeholder="your-app.appspot.com" />
+      </div>
+      <div class="field">
+        <label>projectId</label>
+        <input id="fb-projectId" type="text" placeholder="your-app" />
+      </div>
+      <div class="field">
+        <label>storageBucket</label>
+        <input id="fb-storageBucket" type="text" placeholder="your-app.appspot.com" />
+      </div>
+      <div class="field">
+        <label>appId</label>
+        <input id="fb-appId" type="text" placeholder="1:…:web:…" />
+      </div>
+      <div class="field">
+        <label> messagingToken (optional)</label>
+        <input id="fb-messagingToken" type="text" placeholder="…" />
+      </div>
+      <div id="fb-status" class="status" hidden></div>
+    </section>
+
+    <section id="custom-panel" class="block">
+      <h2>Custom Backend</h2>
+      <p class="hint">Base URL of your own server. Endpoints used:</p>
+      <pre><code>GET    /workspaces
+POST   /workspaces
+GET    /workspaces/:id
+DELETE /workspaces/:id</code></pre>
+      <div class="field">
+        <label>Endpoint</label>
+        <input id="custom-endpoint" type="url" placeholder="https://api.example.com" />
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Capture Preferences</h2>
+      <label class="toggle">
+        <input id="capture-pinned" type="checkbox" checked />
+        <span class="toggle-track"></span>
+        <span class="toggle-label">Capture pinned tabs</span>
+      </label>
+      <label class="toggle">
+        <input id="capture-groups" type="checkbox" checked />
+        <span class="toggle-track"></span>
+        <span class="toggle-label">Capture tab groups</span>
+      </label>
+      <label class="toggle">
+        <input id="sync-on-save" type="checkbox" checked />
+        <span class="toggle-track"></span>
+        <span class="toggle-label">Sync immediately on save</span>
+      </label>
+    </section>
+
+    <section class="block">
+      <h2>Restore Method</h2>
+      <p class="hint">
+        How much of each tab's state to capture and restore. More thorough = larger workspaces and slower restore.
+      </p>
+      <div class="restore-grid">
+        <label class="restore-card" data-mode="form">
+          <input type="radio" name="restoreMode" value="form" checked />
+          <div class="rc-icon">📝</div>
+          <div class="rc-text">
+            <strong>Form State</strong>
+            <span>URLs + scroll + form fields. Fast, small, best default.</span>
+          </div>
+        </label>
+        <label class="restore-card" data-mode="mhtml">
+          <input type="radio" name="restoreMode" value="mhtml" />
+          <div class="rc-icon">📄</div>
+          <div class="rc-text">
+            <strong>Full Page</strong>
+            <span>Save the whole page (DOM + resources). Pixel-perfect restore.</span>
+          </div>
+        </label>
+        <label class="restore-card" data-mode="session">
+          <input type="radio" name="restoreMode" value="session" />
+          <div class="rc-icon">🔁</div>
+          <div class="rc-text">
+            <strong>Browser Session</strong>
+            <span>Whole-browser session restore. Tabs + history + scroll + form.</span>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>AI Features</h2>
+      <p class="hint">
+        Optional Anthropic API key for intelligent auto-naming and predictive
+        lazy restore. Leave blank to use the default time-based naming.
+      </p>
+      <div class="field">
+        <label>Anthropic API Key</label>
+        <input id="ai-api-key" type="password" placeholder="sk-ant-…" autocomplete="off" />
+      </div>
+      <div class="toggle">
+        <input id="ai-auto-name" type="checkbox" checked />
+        <span class="toggle-track"></span>
+        <span class="toggle-label">Auto-name workspaces with AI</span>
+      </div>
+      <div class="toggle">
+        <input id="ai-predictive-restore" type="checkbox" />
+        <span class="toggle-track"></span>
+        <span class="toggle-label">Predictive lazy restore</span>
+      </div>
+      <div class="toggle">
+        <input id="ai-auto-group" type="checkbox" />
+        <span class="toggle-track"></span>
+        <span class="toggle-label">Semantic tab grouping</span>
+      </div>
+      <p class="hint" style="margin-top:12px;">
+        The API key is stored only in your local Chrome profile and never
+        leaves the extension. See the README for setup instructions.
+      </p>
+    </section>
+
+    <footer class="foot">
+      <button id="save-btn" class="primary">Save Settings</button>
+      <span id="save-status" class="status"></span>
+    </footer>
+
+    <script src="options.js" type="module"></script>
+  </body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workspace Launcher</title>
+    <link rel="stylesheet" href="lib/bootstrap.min.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body class="bg-dark text-light min-vh-100 d-flex flex-column">
+    <header class="bar border-bottom border-secondary px-3 py-2 d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <div class="logo"></div>
+        <div class="brand-text">
+          <h1 class="h6 mb-0">Workspaces</h1>
+          <span id="backend-label" class="badge text-bg-secondary">local</span>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-1">
+        <button id="ai-group-btn" class="btn btn-outline-info btn-sm d-flex align-items-center gap-1 py-1 px-2" title="AI Auto-Group: Autoname & color tabs based on all open tabs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+          <span style="font-size: 11px; font-weight: 600;">AI Group</span>
+        </button>
+        <button id="capture-btn" class="btn btn-outline-secondary btn-sm py-1 px-2" title="Capture current window">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="save-row px-3 py-2 border-bottom border-secondary d-flex gap-2">
+      <input id="name-input" class="form-control form-control-dark" type="text" placeholder="Workspace name…" maxlength="60" />
+      <button id="save-btn" class="btn btn-primary" title="Capture and save current window">Save</button>
+    </div>
+
+    <div id="status" class="status px-3 py-1 small border-bottom border-secondary" hidden></div>
+
+    <main id="list" class="list flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3">
+      <div class="empty text-muted text-center p-4">No saved workspaces yet.<br />Capture a window to get started.</div>
+    </main>
+
+    <footer class="foot border-top border-secondary px-3 py-2 d-flex align-items-center justify-content-between">
+      <a id="settings-link" href="#" class="link">Settings</a>
+      <span class="badge text-bg-dark border border-secondary text-info-emphasis d-flex align-items-center gap-1" style="font-size: 10px;">
+        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#34d399;"></span>
+        Tech AI Colors Active
+      </span>
+    </footer>
+
+    <!-- Save modal: choose tabs + name -->
+    <div id="save-modal" class="modal fade" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title">Save Workspace</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input id="save-name" class="form-control form-control-dark mb-3" type="text" placeholder="Workspace name…" maxlength="60" />
+            <div id="tab-checks" class="tab-checks d-flex flex-column gap-1 p-2 border border-secondary rounded"></div>
+            <div class="tab-foot d-flex align-items-center justify-content-between mt-2">
+              <button id="save-select-all" class="btn btn-link btn-sm text-muted">Select all</button>
+              <button id="save-clear" class="btn btn-link btn-sm text-muted">Clear</button>
+              <span id="save-count" class="count small text-muted"></span>
+            </div>
+            <div class="form-check form-switch mt-2">
+              <input class="form-check-input" type="checkbox" id="save-ai-group" checked />
+              <label class="form-check-label small text-secondary" for="save-ai-group">Auto-name & color groups with AI on save</label>
+            </div>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button id="save-cancel" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button id="save-confirm" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Restore mode picker -->
+    <div id="restore-modal" class="modal fade" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title">Restore <span id="restore-name" class="text-muted"></span></h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mode-options d-flex flex-column gap-2" id="mode-options"></div>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button id="restore-cancel" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button id="restore-confirm" class="btn btn-primary">Restore</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast — Bootstrap's toast component. The container is kept live so
+       toasts can be enqueued while one is already showing. -->
+    <div id="toast" class="toast-container toast-bottom toast-end fixed top-0 end-0 p-3"></div>
+
+    <script src="lib/bootstrap.bundle.min.js"></script>
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>
